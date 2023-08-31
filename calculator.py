@@ -30,7 +30,7 @@ class CalculatorScreen():
                             fg = '#000',
                             disabledbackground = "#fff",
                             disabledforeground = "#000",
-                            font = 'Consolas 26',
+                            font = 'Consolas 28',
                             state = DISABLED,
                             width = 32,
                             justify = RIGHT)
