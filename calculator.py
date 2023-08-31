@@ -12,7 +12,9 @@ frame_b = Frame()
 frame_a.pack()
 frame_b.pack()
 
-
+string_1 = ''  
+dot_flag = False
+elems = ['+', '-', '*', '/']
 btn_list = [
 "7", "8", "9", "+", 
 "4", "5", "6", "-",
@@ -69,11 +71,6 @@ for index in btn_list:
     button.configure(width = 13)
     button.grid(row=5, column=2, columnspan=2)
 
-
-
-string_1 = ''  
-dot_flag = False
-elems = ['+', '-', '*', '/']
 
 def output(number):
   global string_1
