@@ -3,7 +3,7 @@ from tkinter import *
 
 root = Tk()
 root.resizable(width = False, height = False)
-root.geometry('330x510')
+root.geometry('330x456')
 root.title('My Calculator')
 root[ 'bg'] = '#ccc'
 
@@ -28,7 +28,7 @@ class CalculatorScreen():
                             fg = '#000',
                             disabledbackground = "#fff",
                             disabledforeground = "#000",
-                            font = 'Consolas 22',
+                            font = 'Consolas 26',
                             state = DISABLED,
                             width = 32,
                             justify = RIGHT)
@@ -36,18 +36,21 @@ class CalculatorScreen():
         
   def write(self, text):
     self.textArea.configure(state = NORMAL)
+    if len(text) >= 3:
+      if text[0] == '0' and text[1] != '.':
+        text = text[1:]
+        self.textArea.insert(END, text)
     self.textArea.insert(END, text)
     self.textArea.configure(state = DISABLED)
 
   def clear(self):
     self.textArea.configure(state = NORMAL)
-    self.textArea.delete(0.0, END)
+    self.textArea.delete(0, END)
     self.textArea.configure(state = DISABLED)
 
 
 screen_1 = CalculatorScreen()
-screen_2 = CalculatorScreen()
-
+screen_1.write('0')
 
 row = 1
 column = 0
@@ -67,10 +70,39 @@ for index in btn_list:
     button.grid(row=5, column=2, columnspan=2)
 
 
-        
-def output(x):
-  screen_1.write(x)
+
+string_1 = ''  
+dot_flag = False
+elems = ['+', '-', '*', '/']
+
+def output(number):
+  global string_1
+  global dot_flag
+  screen_1.clear()
   
+  if (number == '.'):
+    if dot_flag == False:
+      dot_flag = True
+      string_1 += number
+      screen_1.write(string_1)
+    else:
+      screen_1.write(string_1)
+  else:
+    string_1 += number
+    screen_1.write(string_1)
+  if number in elems:
+    dot_flag = False
+
+  if number == '=':
+    string_1 = str(eval(string_1[:-1]))
+    screen_1.clear()
+    screen_1.write(string_1)
+
+  if number == 'C':
+    dot_flag = False
+    string_1 = ''
+    screen_1.clear()
+    screen_1.write('0')
   
   
 root.mainloop()
