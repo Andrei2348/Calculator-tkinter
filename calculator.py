@@ -100,7 +100,11 @@ def output(number):
   # Нажатие +-*/
   if number in elems:
     dot_flag = False
-
+    if string[-2] in elems:
+      string = string[:-2] + number
+      screen.clear()
+      screen.write(string)
+      
   # Нажатие =
   if number == '=':
     string = str(eval(string[:-1]))
