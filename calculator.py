@@ -5,21 +5,21 @@ root = Tk()
 root.resizable(width = False, height = False)
 root.geometry('330x456')
 root.title('My Calculator')
-root[ 'bg'] = '#ccc'
+root['bg'] = '#ccc'
 
 frame_a = Frame()
 frame_b = Frame()
 frame_a.pack()
 frame_b.pack()
 
-string_1 = ''  
+string = ''
 dot_flag = False
 elems = ['+', '-', '*', '/']
 btn_list = [
 "7", "8", "9", "+", 
 "4", "5", "6", "-",
 "1", "2", "3", "*",
-"0", ".", "+/-", "/",
+"0", ".", "/", "CE",
 "=", "C"]
 
 
@@ -51,8 +51,8 @@ class CalculatorScreen():
     self.textArea.configure(state = DISABLED)
 
 
-screen_1 = CalculatorScreen()
-screen_1.write('0')
+screen = CalculatorScreen()
+screen.write('0')
 
 row = 1
 column = 0
@@ -73,33 +73,51 @@ for index in btn_list:
 
 
 def output(number):
-  global string_1
+  global string
   global dot_flag
-  screen_1.clear()
+  screen.clear()
   
   if (number == '.'):
     if dot_flag == False:
       dot_flag = True
-      string_1 += number
-      screen_1.write(string_1)
+      string += number
+      screen.write(string)
     else:
-      screen_1.write(string_1)
+      screen.write(string)
   else:
-    string_1 += number
-    screen_1.write(string_1)
+    string += number
+    screen.write(string)
   if number in elems:
     dot_flag = False
 
   if number == '=':
-    string_1 = str(eval(string_1[:-1]))
-    screen_1.clear()
-    screen_1.write(string_1)
+    string = str(eval(string[:-1]))
+    screen.clear()
+    screen.write(string)
+    # for element in string:
+    #   if element == '.':
+
+
 
   if number == 'C':
     dot_flag = False
-    string_1 = ''
-    screen_1.clear()
-    screen_1.write('0')
+    string = ''
+    screen.clear()
+    screen.write('0')
+
+  if number == 'CE':
+    screen.clear()
+    if len(string) > 3:
+      print(string[-3])
+      if string[-3] == '.':
+        dot_flag = False
+      string = string[:-3]
+      screen.write(string)
+    else:
+      string = ''
+      dot_flag = False
+      screen.write('0')
+    
   
   
 root.mainloop()
