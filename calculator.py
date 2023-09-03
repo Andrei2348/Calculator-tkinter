@@ -13,7 +13,11 @@ frame_b.pack()
 
 string = ''
 dot_flag = False
+
+# Создаем список символов действия (Необходимы для отслеживания нажатия)
 elems = ['+', '-', '*', '/']
+
+# Создаем список кнопок клавиатуры калькулятора
 btn_list = [
 "7", "8", "9", "+", 
 "4", "5", "6", "-",
@@ -22,6 +26,7 @@ btn_list = [
 "=", "C"]
 
 
+# Создаем класс: экран калькулятора
 class CalculatorScreen():
   def __init__(self):
     self.textArea = Entry(master = frame_a)
@@ -34,28 +39,33 @@ class CalculatorScreen():
                             width = 32,
                             justify = RIGHT)
     self.textArea.pack()
-        
-  def write(self, text):
-    self.textArea.configure(state = NORMAL)
-    if len(text) >= 3:
-      if text[0] == '0' and text[1] != '.':
-        text = text[1:]
-        self.textArea.insert(END, text)
-    self.textArea.insert(END, text)
-    self.textArea.configure(state = DISABLED)
-
+    self.write()
+    
+  # Создаем метод для очистки экрана калькулятора
   def clear(self):
     self.textArea.configure(state = NORMAL)
     self.textArea.delete(0, END)
     self.textArea.configure(state = DISABLED)
+        
+  # Создаем метод вывода символов на экран калькулятора
+  def write(self, text = '0'):
+    self.clear()
+    self.textArea.configure(state = NORMAL)
+    if len(text) >= 2:
+      if text[0] == '0' and text[1] != '.':
+        text = text[1:]
+    self.textArea.insert(END, text)
+    self.textArea.configure(state = DISABLED)
 
 
+# Создаем экран калькулятора
 screen = CalculatorScreen()
-screen.write('0')
 
+# Создание кнопок калькулятора
 row = 1
 column = 0
 for index in btn_list:
+  # Привязка функций к кнопкам калькулятора
   cmd = lambda x = index: output(x)
   button = Button(master = frame_b, 
                   text = index,
@@ -71,22 +81,25 @@ for index in btn_list:
   if column > 3:
     column = 0
     row += 1
+  
+    
+  # Конфигурация кнопок  '=' и 'С'
   if index == '=':
     button.configure(width = 13, bg = '#c58424', activebackground="#cc9543", activeforeground="#000")
-    button.grid(row=5, column=0, columnspan=2)
+    button.grid(row=5, column=0, columnspan = 2)
               
   if index == 'C':
     button.configure(width = 13, bg = '#c58424', activebackground="#cc9543", activeforeground="#000")
-    button.grid(row=5, column=2, columnspan=2)
+    button.grid(row=5, column=2, columnspan = 2)
 
 
 def output(number):
   global string
   global dot_flag
-  screen.clear()
-
-  # Нажатие .
+  
+  # Нажатие '.'
   if (number == '.'):
+    # Блокировка повторного нажатия '.'
     if dot_flag == False:
       dot_flag = True
       string += number
@@ -97,34 +110,30 @@ def output(number):
     string += number
     screen.write(string)
 
-  # Нажатие +-*/
+  # Нажатие '+-*/'
   if number in elems:
     dot_flag = False
     if string[-2] in elems:
       string = string[:-2] + number
-      screen.clear()
       screen.write(string)
       
-  # Нажатие =
+  # Нажатие '='
   if number == '=':
     string = str(eval(string[:-1]))
-    screen.clear()
     screen.write(string)
     dot_flag = False
     for element in string:
       if element == '.':
         dot_flag = True
 
-  # Нажатие С
+  # Нажатие 'С'
   if number == 'C':
     dot_flag = False
     string = ''
-    screen.clear()
-    screen.write('0')
+    screen.write()
 
-  # Нажатие СЕ
+  # Нажатие 'СЕ'
   if number == 'CE':
-    screen.clear()
     if len(string) > 3:
       print(string[-3])
       if string[-3] == '.':
@@ -134,6 +143,6 @@ def output(number):
     else:
       string = ''
       dot_flag = False
-      screen.write('0')
+      screen.write()
     
 root.mainloop()
