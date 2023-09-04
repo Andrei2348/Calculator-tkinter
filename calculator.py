@@ -12,6 +12,7 @@ frame_a.pack()
 frame_b.pack()
 
 string = ''
+resultString = ''
 dot_flag = False
 
 # Создаем список символов действия (Необходимы для отслеживания нажатия)
@@ -22,9 +23,8 @@ btn_list = [
 "7", "8", "9", "+", 
 "4", "5", "6", "-",
 "1", "2", "3", "*",
-"0", ".", "/", "CE",
+"0", ".", "CE", "/",
 "=", "C"]
-
 
 # Создаем класс: экран калькулятора
 class CalculatorScreen():
@@ -57,7 +57,6 @@ class CalculatorScreen():
     self.textArea.insert(END, text)
     self.textArea.configure(state = DISABLED)
 
-
 # Создаем экран калькулятора
 screen = CalculatorScreen()
 
@@ -82,7 +81,6 @@ for index in btn_list:
     column = 0
     row += 1
   
-    
   # Конфигурация кнопок  '=' и 'С'
   if index == '=':
     button.configure(width = 13, bg = '#c58424', activebackground="#cc9543", activeforeground="#000")
@@ -96,6 +94,14 @@ for index in btn_list:
 def output(number):
   global string
   global dot_flag
+  global resultString
+
+  # Обнуление переменной string после знаков действия
+  if len(string) > 2:
+    if (string[-2] in elems) and  (string[-1] not in elems):
+      resultString += (str(float(string[:-2])) + string[-2])
+      string = string[-1]
+      screen.write(resultString + string)
   
   # Нажатие '.'
   if (number == '.'):
@@ -103,46 +109,78 @@ def output(number):
     if dot_flag == False:
       dot_flag = True
       string += number
-      screen.write(string)
+      screen.write(resultString + string)
     else:
-      screen.write(string)
+      screen.write(resultString + string)
   else:
     string += number
-    screen.write(string)
+    screen.write(resultString + string)
 
   # Нажатие '+-*/'
   if number in elems:
+    if (string[-1] in elems) and  (string[-2] in elems):
+      string = (str(float(string[:-2])) + number)
+      screen.write(resultString + string)
+    else:
+      string = (str(float(string[:-1])) + number)
+      screen.write(resultString + string)
     dot_flag = False
-    if string[-2] in elems:
-      string = string[:-2] + number
-      screen.write(string)
       
   # Нажатие '='
   if number == '=':
-    string = str(eval(string[:-1]))
+    resultString += str(float(string[:-1]))
+    string = str(eval(resultString))
     screen.write(string)
-    dot_flag = False
-    for element in string:
-      if element == '.':
-        dot_flag = True
+    resultString = ''
+    dot_flag = checkDot(string)
 
   # Нажатие 'С'
   if number == 'C':
-    dot_flag = False
-    string = ''
-    screen.write()
+    resetCalc()
 
-  # Нажатие 'СЕ'
+  # Нажатие 'СЕ' Пошаговое очищение поля ввода
   if number == 'CE':
-    if len(string) > 3:
-      print(string[-3])
-      if string[-3] == '.':
-        dot_flag = False
-      string = string[:-3]
-      screen.write(string)
-    else:
+    # Стираем последнюю введенную цифру
+    if len(resultString) > 0 and string == 'CE':
+      resultString = resultString[:-1]
       string = ''
-      dot_flag = False
-      screen.write()
-    
+      screen.write(resultString)
+      # Установка разрешения на '.' при очистке resultString
+      dot_flag = checkDot(resultString)
+
+    if len(resultString) > 0 and len(string) > 0 and string != 'CE':
+      string = string[:-3]
+      screen.write(resultString + string)
+      # Установка разрешения на '.' при очистке string
+      dot_flag = checkDot(string)
+
+    if resultString == '' and len(string) > 0:
+      string = string[:-3]
+      screen.write(resultString + string)
+      # Установка разрешения на '.' при очистке string
+      dot_flag = checkDot(string)
+   
+    # Обнуление калькулятора
+    if (resultString == '' and string == ''):
+      resetCalc()
+  
+
+# Обнуление калькулятора
+def resetCalc():
+  global string
+  global dot_flag
+  global resultString
+  dot_flag = False
+  string = ''
+  resultString = ''
+  screen.write()
+
+# Проверка наличия '.' в строке
+def checkDot(data):
+  if '.' in data:
+    return True
+  else:
+    return False
+
+
 root.mainloop()
