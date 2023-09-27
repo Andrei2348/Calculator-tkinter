@@ -34,7 +34,7 @@ class CalculatorScreen():
                             fg = '#000',
                             disabledbackground = "#fff",
                             disabledforeground = "#000",
-                            font = 'Arial 28',
+                            font = 'Arial 34',
                             state = DISABLED,
                             width = 32,
                             justify = RIGHT)
