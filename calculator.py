@@ -2,7 +2,7 @@ from tkinter import *
 
 root = Tk()
 root.resizable(width = False, height = False)
-root.geometry('330x456')
+root.geometry('330x465')
 root.title('My Calculator')
 root['bg'] = '#ccc'
 
@@ -17,7 +17,7 @@ dot_flag = False
 
 # Создаем список символов действия (Необходимы для отслеживания нажатия)
 elems = ['+', '-', '*', '/']
-
+nums = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
 # Создаем список кнопок клавиатуры калькулятора
 btn_list = [
 "7", "8", "9", "+", 
@@ -96,10 +96,14 @@ def output(number):
   global dot_flag
   global resultString
 
+
+
+
   # Обнуление переменной string после знаков действия
   if len(string) > 2:
     if (string[-2] in elems) and  (string[-1] not in elems):
-      resultString += (str(float(string[:-2])) + string[-2])
+      # resultString += (str(float(string[:-2])) + string[-2])
+      resultString += (str((string[:-2])) + string[-2])
       string = string[-1]
       screen.write(resultString + string)
   
@@ -118,17 +122,27 @@ def output(number):
 
   # Нажатие '+-*/'
   if number in elems:
-    if (string[-1] in elems) and  (string[-2] in elems):
-      string = (str(float(string[:-2])) + number)
+    if len(string) == 1 and (resultString[-1] not in elems):
+      print('notHalt')
       screen.write(resultString + string)
     else:
-      string = (str(float(string[:-1])) + number)
+      print('halt')
+      print(resultString)
+      screen.write(resultString)
+    if (len(string) > 1) and (string[-1] in elems) and (string[-2] in elems):
+      print('halllt')
+      string = (str(string[:-2]) + number)
+      screen.write(resultString + string)
+    else:
+      print('haaalllt')
+      string = (str(string[:-1]) + number)
       screen.write(resultString + string)
     dot_flag = False
       
   # Нажатие '='
   if number == '=':
-    resultString += str(float(string[:-1]))
+    # resultString += str(float(string[:-1]))
+    resultString += str(string[:-1])
     string = str(eval(resultString))
     screen.write(string)
     resultString = ''
@@ -141,8 +155,10 @@ def output(number):
   # Нажатие 'СЕ' Пошаговое очищение поля ввода
   if number == 'CE':
     # Стираем последнюю введенную цифру
+    print(resultString)
     if len(resultString) > 0 and string == 'CE':
       resultString = resultString[:-1]
+      # print(resultString)
       string = ''
       screen.write(resultString)
       # Установка разрешения на '.' при очистке resultString
@@ -159,7 +175,7 @@ def output(number):
       screen.write(resultString + string)
       # Установка разрешения на '.' при очистке string
       dot_flag = checkDot(string)
-   
+      print(dot_flag)
     # Обнуление калькулятора
     if (resultString == '' and string == ''):
       resetCalc()
