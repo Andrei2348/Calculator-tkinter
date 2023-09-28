@@ -172,4 +172,5 @@ def resetCalc():
 def checkDot(data):
   return (True if '.' in data else False)
 
-root.mainloop()
+if __name__ == '__main__':
+  root.mainloop()
