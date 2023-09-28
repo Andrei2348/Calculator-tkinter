@@ -17,7 +17,9 @@ dot_flag = False
 
 # Создаем список символов действия (Необходимы для отслеживания нажатия)
 elems = ['+', '-', '*', '/']
-nums = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+symbols = ['=', '.', 'C', 'CE']
+nums = list(range(0, 10))
+
 # Создаем список кнопок клавиатуры калькулятора
 btn_list = [
 "7", "8", "9", "+", 
@@ -51,9 +53,6 @@ class CalculatorScreen():
   def write(self, text = '0'):
     self.clear()
     self.textArea.configure(state = NORMAL)
-    if len(text) >= 2:
-      if text[0] == '0' and text[1] != '.':
-        text = text[1:]
     self.textArea.insert(END, text)
     self.textArea.configure(state = DISABLED)
 
@@ -97,16 +96,6 @@ def output(number):
   global resultString
 
 
-
-
-  # Обнуление переменной string после знаков действия
-  if len(string) > 2:
-    if (string[-2] in elems) and  (string[-1] not in elems):
-      # resultString += (str(float(string[:-2])) + string[-2])
-      resultString += (str((string[:-2])) + string[-2])
-      string = string[-1]
-      screen.write(resultString + string)
-  
   # Нажатие '.'
   if (number == '.'):
     # Блокировка повторного нажатия '.'
@@ -116,72 +105,59 @@ def output(number):
       screen.write(resultString + string)
     else:
       screen.write(resultString + string)
-  else:
-    string += number
+
+
+  # Нажатие цифр
+  if number not in elems and number not in symbols and int(number) in nums:
+    # Исправление ситуации, когда 0123 надо выводить как 123
+    if len(string) > 1 and string[0] == '0' and string[1] != '.':
+      string = string[1:] + number
+    else:
+      string += number
     screen.write(resultString + string)
+
 
   # Нажатие '+-*/'
   if number in elems:
-    if len(string) == 1 and (resultString[-1] not in elems):
-      print('notHalt')
-      screen.write(resultString + string)
+    resultString += string
+    string = ''
+    if resultString[-1] not in elems:
+      resultString += number
     else:
-      print('halt')
-      print(resultString)
-      screen.write(resultString)
-    if (len(string) > 1) and (string[-1] in elems) and (string[-2] in elems):
-      print('halllt')
-      string = (str(string[:-2]) + number)
-      screen.write(resultString + string)
-    else:
-      print('haaalllt')
-      string = (str(string[:-1]) + number)
-      screen.write(resultString + string)
+      resultString = resultString[:-1] + number
     dot_flag = False
+    screen.write(resultString + string)
+ 
       
   # Нажатие '='
   if number == '=':
-    # resultString += str(float(string[:-1]))
-    resultString += str(string[:-1])
-    string = str(eval(resultString))
-    screen.write(string)
+    resultString += string
+    resultString = str(eval(resultString))
+    screen.write(resultString)
+    dot_flag = checkDot(resultString)
     resultString = ''
-    dot_flag = checkDot(string)
+
 
   # Нажатие 'С'
   if number == 'C':
     resetCalc()
 
+
   # Нажатие 'СЕ' Пошаговое очищение поля ввода
   if number == 'CE':
     # Стираем последнюю введенную цифру
-    print(resultString)
-    if len(resultString) > 0 and string == 'CE':
+    if len(resultString) > 0 and len(string) == 0: 
       resultString = resultString[:-1]
-      # print(resultString)
-      string = ''
-      screen.write(resultString)
-      # Установка разрешения на '.' при очистке resultString
       dot_flag = checkDot(resultString)
-
-    if len(resultString) > 0 and len(string) > 0 and string != 'CE':
-      string = string[:-3]
-      screen.write(resultString + string)
-      # Установка разрешения на '.' при очистке string
+    if (len(resultString) > 0 and len(string) > 0) or (len(resultString) == 0 and len(string) > 0):
+      string = string[:-1]
       dot_flag = checkDot(string)
-
-    if resultString == '' and len(string) > 0:
-      string = string[:-3]
-      screen.write(resultString + string)
-      # Установка разрешения на '.' при очистке string
-      dot_flag = checkDot(string)
-      print(dot_flag)
-    # Обнуление калькулятора
-    if (resultString == '' and string == ''):
+    if len(resultString) == 0 and len(string) == 0:
       resetCalc()
+    screen.write(resultString + string)
   
 
-# Обнуление калькулятора
+# # Обнуление калькулятора
 def resetCalc():
   global string
   global dot_flag
@@ -191,12 +167,9 @@ def resetCalc():
   resultString = ''
   screen.write()
 
-# Проверка наличия '.' в строке
-def checkDot(data):
-  if '.' in data:
-    return True
-  else:
-    return False
 
+# # Проверка наличия '.' в строке
+def checkDot(data):
+  return (True if '.' in data else False)
 
 root.mainloop()
