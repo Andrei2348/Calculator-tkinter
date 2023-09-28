@@ -110,10 +110,9 @@ def output(number):
   # Нажатие цифр
   if number not in elems and number not in symbols and int(number) in nums:
     # Исправление ситуации, когда 0123 надо выводить как 123
+    string += number
     if len(string) > 1 and string[0] == '0' and string[1] != '.':
-      string = string[1:] + number
-    else:
-      string += number
+      string = string[1:]
     screen.write(resultString + string)
 
 
