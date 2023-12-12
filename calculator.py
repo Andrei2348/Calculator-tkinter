@@ -133,6 +133,7 @@ def output(number):
     resultString += string
     resultString = str(eval(resultString))
     screen.write(resultString)
+    string = resultString
     dot_flag = checkDot(resultString)
     resultString = ''
 
