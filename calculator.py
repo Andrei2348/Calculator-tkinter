@@ -1,4 +1,14 @@
 from tkinter import *
+import logging
+import argparse
+
+
+logging.basicConfig(filename = 'history.log',
+                    filemode='w',
+                    encoding = 'utf-8',
+                    level = logging.NOTSET)
+logger = logging.getLogger('Калькулятор')
+
 
 root = Tk()
 root.resizable(width = False, height = False)
@@ -14,10 +24,11 @@ frame_b.pack()
 string = ''
 resultString = ''
 dot_flag = False
+equals_flag = False
 
 # Создаем список символов действия (Необходимы для отслеживания нажатия)
 elems = ['+', '-', '*', '/']
-symbols = ['=', '.', 'C', 'CE']
+symbols = ['=', 'C', 'CE', '.']
 nums = list(range(0, 10))
 
 # Создаем список кнопок клавиатуры калькулятора
@@ -93,6 +104,7 @@ for index in btn_list:
 def output(number):
   global string
   global dot_flag
+  global equals_flag
   global resultString
 
 
@@ -105,19 +117,27 @@ def output(number):
       screen.write(resultString + string)
     else:
       screen.write(resultString + string)
+    
 
+
+  if(number not in elems) and (number not in symbols) and (int(number) in nums) and (equals_flag == True):
+    equals_flag = False
+    dot_flag = False
+    string = ''
+    logger.info('Обнуление данных калькулятора после вывода результата выражения')
 
   # Нажатие цифр
-  if number not in elems and number not in symbols and int(number) in nums:
-    # Исправление ситуации, когда 0123 надо выводить как 123
+  if (number not in elems) and (number not in symbols) and int(number) in nums and equals_flag == False:
     string += number
+    logger.info(f'Ввели число {number}')
+    # Исправление ситуации, когда 0123 надо выводить как 123
     if len(string) > 1 and string[0] == '0' and string[1] != '.':
       string = string[1:]
     screen.write(resultString + string)
 
-
   # Нажатие '+-*/'
   if number in elems:
+    equals_flag == False
     resultString += string
     string = ''
     if resultString[-1] not in elems:
@@ -126,21 +146,29 @@ def output(number):
       resultString = resultString[:-1] + number
     dot_flag = False
     screen.write(resultString + string)
- 
+    logger.info(f'Нажат {number}')
+    
       
   # Нажатие '='
   if number == '=':
     resultString += string
-    resultString = str(eval(resultString))
-    screen.write(resultString)
-    string = resultString
-    dot_flag = checkDot(resultString)
-    resultString = ''
-
+    try:
+      logger.info(f'Вычисляем результат выражения: {resultString}')
+      resultString = str(eval(resultString))
+      screen.write(resultString)
+      string = resultString
+      dot_flag = checkDot(resultString)
+      resultString = ''
+      equals_flag = True
+      logger.info(f'Результат выражения равен {resultString + string}')
+    except:
+      logger.warning('Ошибка (деление на ноль)')
+      screen.write('division by zero')
 
   # Нажатие 'С'
   if number == 'C':
     resetCalc()
+    logger.info('Нажат сброс')
 
 
   # Нажатие 'СЕ' Пошаговое очищение поля ввода
@@ -155,22 +183,34 @@ def output(number):
     if len(resultString) == 0 and len(string) == 0:
       resetCalc()
     screen.write(resultString + string)
-  
+    logger.info('Нажат backspace')
 
 # # Обнуление калькулятора
 def resetCalc():
   global string
   global dot_flag
   global resultString
+  global equals_flag
   dot_flag = False
+  equals_flag = False
   string = ''
   resultString = ''
   screen.write()
-
+  
 
 # # Проверка наличия '.' в строке
 def checkDot(data):
   return (True if '.' in data else False)
 
 if __name__ == '__main__':
-  root.mainloop()
+  parser = argparse.ArgumentParser(description='Калькулятор на tkinter')
+  try:
+    parser.add_argument('-r',
+                        action='store_true',
+                        help = 'для запуска калькулятора')
+    args = parser.parse_args()
+    if vars(args)['r'] == True:
+      root.mainloop()
+  except:
+    print('Для запуска калькулятора введите "python calculator.py -r"')
+
