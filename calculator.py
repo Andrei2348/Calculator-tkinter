@@ -206,13 +206,11 @@ def checkDot(data):
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='Калькулятор на tkinter')
-  try:
-    parser.add_argument('-r',
-                        action='store_true',
-                        help = 'для запуска калькулятора')
-    args = parser.parse_args()
-    if vars(args)['r'] == True:
-      root.mainloop()
-  except:
-    print('Для запуска калькулятора введите "python calculator.py -r"')
+  parser.add_argument('-r',
+                      action='store_true',
+                      help = 'для запуска калькулятора')
+  args = parser.parse_args()
+  if vars(args)['r'] == True:
+    root.mainloop()
+  print('Для запуска калькулятора введите "python calculator.py -r"')
 
