@@ -155,6 +155,8 @@ def output(number):
     try:
       logger.info(f'Вычисляем результат выражения: {resultString}')
       resultString = str(eval(resultString))
+      if len(resultString) > 12:
+        resultString = resultString[:13]
       screen.write(resultString)
       string = resultString
       dot_flag = checkDot(resultString)
@@ -163,7 +165,7 @@ def output(number):
       logger.info(f'Результат выражения равен {resultString + string}')
     except:
       logger.warning('Ошибка (деление на ноль)')
-      screen.write('division by zero')
+      screen.write('Ошибка')
 
   # Нажатие 'С'
   if number == 'C':
